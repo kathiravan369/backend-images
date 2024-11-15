@@ -4,21 +4,24 @@ import path from "path";
 import cors from "cors";
 import { nanoid } from "nanoid";
 import url from "url";
-
+import dotenv from "dotenv";
+dotenv.config();
 // Get the current directory of the module
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const app = express();
-const PORT = 5000;
-const uploadPath = path.join(__dirname, "uploads"); // Path to the uploads folder
+const PORT = process.env.PORT || 5000
+const uploadPath = path.join(__dirname, process.env.UPLOAD_PATH || "uploads"); // Path to the uploads folder
 
 // Ensure the uploads directory exists
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath);
 }
 
-// Enable CORS for all origins
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "*",  // Allow all if not specified
+};
+app.use(cors(corsOptions));
 
 // Serve static files from the uploads folder
 app.use("/images", express.static(uploadPath));
